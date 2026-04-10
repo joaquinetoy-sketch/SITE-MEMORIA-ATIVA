@@ -1,0 +1,5 @@
+{
+  "name": "Memória Ativa",
+  "description": "Plataforma de memorização de leis e estudos para concursos utilizando Active Recall e Repetição Espaçada.",
+  "requestFramePermissions": []
+}
