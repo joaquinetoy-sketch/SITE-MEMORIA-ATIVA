@@ -53,24 +53,24 @@ export const FAQ: React.FC = () => {
     <section id="faq" className="py-24 bg-white scroll-mt-24">
       <div className="container mx-auto px-4 md:px-6 max-w-3xl">
         <div className="mb-12 text-center">
-          <h2 className="font-display font-bold text-3xl text-brand-dark mb-4">PERGUNTAS FREQUENTES</h2>
-          <p className="text-brand-gray">Tire suas dúvidas e comece a estudar do jeito certo.</p>
+          <h2 className="font-display font-bold text-3xl text-slate-900 mb-4">PERGUNTAS FREQUENTES</h2>
+          <p className="text-slate-600">Tire suas dúvidas e comece a estudar do jeito certo.</p>
         </div>
 
-        <div className="divide-y divide-brand-border border-t border-b border-brand-border mb-12">
+        <div className="divide-y divide-slate-200 border-t border-b border-slate-200 mb-12">
           {faqItems.map((item, index) => (
             <div key={index} className="bg-white">
               <button
                 className="w-full py-6 flex items-center justify-between text-left focus:outline-none group"
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
               >
-                <span className={`font-medium text-lg pr-4 transition-colors ${openIndex === index ? 'text-brand-primary' : 'text-brand-dark group-hover:text-brand-gray'}`}>
+                <span className={`font-medium text-lg pr-4 transition-colors ${openIndex === index ? 'text-orange-500' : 'text-slate-900 group-hover:text-slate-600'}`}>
                   {item.question}
                 </span>
                 {openIndex === index ? (
-                  <Minus className="text-brand-primary w-5 h-5 flex-shrink-0" />
+                  <Minus className="text-orange-500 w-5 h-5 flex-shrink-0" />
                 ) : (
-                  <Plus className="text-brand-gray w-5 h-5 flex-shrink-0 group-hover:text-brand-dark" />
+                  <Plus className="text-slate-500 w-5 h-5 flex-shrink-0 group-hover:text-slate-900" />
                 )}
               </button>
               
@@ -79,7 +79,7 @@ export const FAQ: React.FC = () => {
                   openIndex === index ? 'max-h-96 opacity-100 pb-6' : 'max-h-0 opacity-0'
                 }`}
               >
-                <p className="text-brand-gray leading-relaxed pr-8 text-base">
+                <p className="text-slate-600 leading-relaxed pr-8 text-base">
                   {item.answer}
                 </p>
               </div>
@@ -88,12 +88,12 @@ export const FAQ: React.FC = () => {
         </div>
 
         {/* WhatsApp Support Card */}
-        <div className="bg-brand-surface rounded-2xl p-8 text-center border border-brand-border shadow-soft">
+        <div className="bg-slate-50 rounded-3xl p-8 text-center border border-slate-200 shadow-md">
           <div className="w-12 h-12 bg-[#25D366]/10 rounded-full flex items-center justify-center mx-auto mb-4 text-[#25D366]">
             <MessageCircle size={28} fill="currentColor" className="opacity-80" />
           </div>
-          <h3 className="font-display font-bold text-xl text-brand-dark mb-2">Ainda tem alguma dúvida?</h3>
-          <p className="text-brand-gray mb-6">
+          <h3 className="font-display font-bold text-xl text-slate-900 mb-2">Ainda tem alguma dúvida?</h3>
+          <p className="text-slate-600 mb-6">
             Não encontrou o que procurava? Fale diretamente com nossa equipe de suporte agora mesmo.
           </p>
           <a 

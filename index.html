@@ -1,80 +1,523 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memória Ativa - Estude Leis com Eficiência</title>
+    
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              display: ['Plus Jakarta Sans', 'sans-serif'],
-            },
-            colors: {
-              brand: {
-                dark: '#0F172A',
-                surface: '#F8FAFC',
-                gray: '#64748B',
-                border: '#E2E8F0',
-                primary: '#2563EB',
-              }
-            },
-            boxShadow: {
-              'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
-              'card': '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
-            },
-            animation: {
-              'scroll': 'scroll 40s linear infinite',
-            },
-            keyframes: {
-              scroll: {
-                '0%': { transform: 'translateX(0)' },
-                '100%': { transform: 'translateX(-50%)' },
-              }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#1B1F4B', 
+                            surface: '#F8FAFC',
+                            gray: '#64748B',
+                            border: '#E2E8F0',
+                            primary: '#1B1F4B',
+                            cyan: '#00C2FF'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'card': '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+                    }
+                }
             }
-          }
         }
-      }
     </script>
+
     <style>
-      body {
-        background-color: #FFFFFF;
-        color: #0F172A;
-      }
-      ::-webkit-scrollbar {
-        width: 8px;
-        height: 0px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #F1F5F9; 
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #CBD5E1; 
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #94A3B8; 
-      }
+        body { background-color: #FFFFFF; color: #1B1F4B; margin: 0; overflow-x: hidden; }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .animate-scroll { animation: scroll 40s linear infinite; display: flex; width: max-content; }
+        .modal-open { overflow: hidden; }
+        .faq-answer { max-height: 0; transition: max-height 0.3s ease-out, opacity 0.3s ease-out; opacity: 0; }
+        .faq-answer.active { max-height: 500px; opacity: 1; padding-bottom: 1.5rem; }
+        .icon-rotate { transition: transform 0.3s ease; }
+        
+        /* Se o React carregar, ocultamos o conteúdo estático para evitar duplicação */
+        body.react-loaded #static-content { display: none; }
     </style>
-  <script type="importmap">
+<script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
     "react/": "https://esm.sh/react@^19.2.3/",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.41.0"
   }
 }
 </script>
+<link rel="stylesheet" href="/index.css">
 </head>
-  <body>
-  <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
-</html>   
+<body class="font-sans">
+    <!-- Mounting point for React environment -->
+    <div id="root"></div>
+
+    <div id="static-content">
+        <!-- HEADER -->
+        <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-brand-border">
+            <div class="container mx-auto px-4 md:px-6">
+                <div class="flex items-center justify-between h-20">
+                    <a href="#" class="flex items-center gap-3">
+                        <div class="h-8 md:h-10 aspect-square">
+                            <svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" rx="20" fill="#1B1F4B"/><g transform="translate(50, 50) scale(0.8)"><path d="M-5,32 C-22,32 -38,24 -38,0 C-38,-24 -22,-32 -5,-32 L-5,32 Z" fill="#FFF"/><path d="M5,32 C22,32 38,24 38,0 C38,-24 22,-32 5,-32 L5,32 Z" fill="#FFF"/><rect x="-3" y="-32" width="6" height="64" fill="#1B1F4B" rx="3"/></g></svg>
+                        </div>
+                        <span class="font-display font-extrabold text-xl tracking-tight text-brand-dark">Memória Ativa</span>
+                    </a>
+
+                    <nav class="hidden lg:flex items-center gap-8">
+                        <a href="#como-funciona" class="text-sm font-semibold text-brand-gray hover:text-brand-dark transition-colors">Como Funciona</a>
+                        <a href="#beneficios" class="text-sm font-semibold text-brand-gray hover:text-brand-dark transition-colors">Benefícios</a>
+                        <a href="#depoimentos" class="text-sm font-semibold text-brand-gray hover:text-brand-dark transition-colors">Depoimentos</a>
+                        <a href="#faq" class="text-sm font-semibold text-brand-gray hover:text-brand-dark transition-colors">FAQ</a>
+                    </nav>
+
+                    <div class="hidden md:flex items-center gap-3">
+                        <button onclick="window.location.href='https://memoria-ativa-pro.vercel.app/'" class="px-6 py-2 text-sm font-semibold text-brand-gray hover:text-brand-dark">Entrar</button>
+                        <button onclick="openModal()" class="bg-brand-dark text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-slate-900 transition-all">Começar Agora</button>
+                    </div>
+
+                    <button class="lg:hidden p-2 text-brand-dark" onclick="toggleMenu()">
+                        <i data-lucide="menu" id="menu-icon"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- MOBILE MENU -->
+            <div id="mobile-menu" class="hidden absolute top-full left-0 right-0 bg-white border-b border-brand-border p-4 shadow-lg flex flex-col gap-2">
+                <a href="#como-funciona" onclick="toggleMenu()" class="font-bold px-4 py-3 hover:bg-brand-surface rounded-lg">Como Funciona</a>
+                <a href="#beneficios" onclick="toggleMenu()" class="font-bold px-4 py-3 hover:bg-brand-surface rounded-lg">Benefícios</a>
+                <a href="#depoimentos" onclick="toggleMenu()" class="font-bold px-4 py-3 hover:bg-brand-surface rounded-lg">Depoimentos</a>
+                <a href="#faq" onclick="toggleMenu()" class="font-bold px-4 py-3 hover:bg-brand-surface rounded-lg">FAQ</a>
+                <button onclick="openModal()" class="w-full bg-brand-dark text-white py-4 rounded-xl font-bold mt-2">Começar Agora</button>
+            </div>
+        </header>
+
+        <main>
+            <!-- HERO -->
+            <section class="pt-32 pb-20 md:pt-44 md:pb-32 bg-white relative overflow-hidden">
+                <div class="container mx-auto px-4 md:px-6 relative z-10 text-center lg:text-left">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                        <div class="max-w-xl mx-auto lg:mx-0">
+                            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-surface border border-brand-border mb-8">
+                                <span class="w-2 h-2 rounded-full bg-brand-cyan animate-pulse"></span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-brand-dark">A Nova Era da Memorização para Concursos</span>
+                            </div>
+                            <h1 class="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl text-brand-dark mb-6 leading-tight">
+                                Pare de Repetir e <span class="text-brand-gray/60 italic font-medium">Não Memorizar:</span><br>
+                                Estude com <span class="relative inline-block">Memória Ativa<div class="absolute -bottom-1 left-0 w-full h-1 bg-brand-cyan/30"></div></span>
+                            </h1>
+                            <p class="text-lg text-brand-gray mb-10 leading-relaxed">Finalmente um método baseado em <span class="text-brand-dark font-semibold">Active Recall</span> que faz você lembrar de verdade o que estudou no dia da prova.</p>
+                            <button onclick="openModal()" class="w-full sm:w-auto bg-brand-dark text-white px-10 py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 hover:bg-slate-900 transition-all shadow-lg group">
+                                <i data-lucide="sparkles" class="text-brand-cyan group-hover:scale-125 transition-transform"></i>
+                                TESTAR MÉTODO GRATUITAMENTE
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LEARNING TECHNIQUES -->
+            <section class="py-12 bg-brand-surface/50 border-b border-brand-border overflow-hidden relative">
+                <div class="container mx-auto px-4 mb-8 text-center">
+                    <p class="text-sm font-bold text-brand-gray uppercase tracking-widest">Técnicas de Aprendizagem Inclusas</p>
+                </div>
+                <div class="flex w-full">
+                    <div class="flex animate-scroll">
+                        <!-- Itens duplicados para loop infinito -->
+                        <div class="flex items-center gap-3 mx-4 px-6 py-4 bg-white rounded-xl border border-brand-border shadow-sm min-w-max">
+                            <div class="bg-brand-surface p-2 rounded-lg text-brand-primary"><i data-lucide="anchor"></i></div>
+                            <span class="font-display font-semibold text-brand-dark text-lg">Ancoragem</span>
+                        </div>
+                        <div class="flex items-center gap-3 mx-4 px-6 py-4 bg-white rounded-xl border border-brand-border shadow-sm min-w-max">
+                            <div class="bg-brand-surface p-2 rounded-lg text-brand-primary"><i data-lucide="zap"></i></div>
+                            <span class="font-display font-semibold text-brand-dark text-lg">Gatilhos Mentais</span>
+                        </div>
+                        <div class="flex items-center gap-3 mx-4 px-6 py-4 bg-white rounded-xl border border-brand-border shadow-sm min-w-max">
+                            <div class="bg-brand-surface p-2 rounded-lg text-brand-primary"><i data-lucide="repeat"></i></div>
+                            <span class="font-display font-semibold text-brand-dark text-lg">Memória Ativa</span>
+                        </div>
+                        <div class="flex items-center gap-3 mx-4 px-6 py-4 bg-white rounded-xl border border-brand-border shadow-sm min-w-max">
+                            <div class="bg-brand-surface p-2 rounded-lg text-brand-primary"><i data-lucide="book-open"></i></div>
+                            <span class="font-display font-semibold text-brand-dark text-lg">Explicações</span>
+                        </div>
+                        <div class="flex items-center gap-3 mx-4 px-6 py-4 bg-white rounded-xl border border-brand-border shadow-sm min-w-max">
+                            <div class="bg-brand-surface p-2 rounded-lg text-brand-primary"><i data-lucide="eye"></i></div>
+                            <span class="font-display font-semibold text-brand-dark text-lg">Gatilho Visual</span>
+                        </div>
+                         <div class="flex items-center gap-3 mx-4 px-6 py-4 bg-white rounded-xl border border-brand-border shadow-sm min-w-max">
+                            <div class="bg-brand-surface p-2 rounded-lg text-brand-primary"><i data-lucide="anchor"></i></div>
+                            <span class="font-display font-semibold text-brand-dark text-lg">Ancoragem</span>
+                        </div>
+                        <div class="flex items-center gap-3 mx-4 px-6 py-4 bg-white rounded-xl border border-brand-border shadow-sm min-w-max">
+                            <div class="bg-brand-surface p-2 rounded-lg text-brand-primary"><i data-lucide="zap"></i></div>
+                            <span class="font-display font-semibold text-brand-dark text-lg">Gatilhos Mentais</span>
+                        </div>
+                        <div class="flex items-center gap-3 mx-4 px-6 py-4 bg-white rounded-xl border border-brand-border shadow-sm min-w-max">
+                            <div class="bg-brand-surface p-2 rounded-lg text-brand-primary"><i data-lucide="repeat"></i></div>
+                            <span class="font-display font-semibold text-brand-dark text-lg">Memória Ativa</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PROBLEM SOLUTION -->
+            <section class="py-24 bg-brand-surface border-y border-brand-border">
+                <div class="container mx-auto px-4 md:px-6">
+                    <div class="grid md:grid-cols-2 gap-0 max-w-5xl mx-auto rounded-xl overflow-hidden border border-brand-border shadow-sm">
+                        <div class="bg-white p-10 md:p-12">
+                            <h3 class="font-bold text-xs text-brand-gray mb-6 uppercase tracking-wider">O PROBLEMA QUE VOCÊ ENFRENTA</h3>
+                            <h2 class="font-display font-bold text-2xl text-brand-dark mb-2">Estudar leis é fácil.</h2>
+                            <h2 class="font-display font-bold text-2xl text-brand-gray mb-8">Memorizar, não.</h2>
+                            <p class="text-brand-gray mb-6">Você já tem:</p>
+                            <ul class="space-y-4 mb-8">
+                                <li class="flex items-start gap-3 text-brand-gray"><i data-lucide="x" class="text-red-400 mt-1"></i> <span>Relido o mesmo artigo várias vezes?</span></li>
+                                <li class="flex items-start gap-3 text-brand-gray"><i data-lucide="x" class="text-red-400 mt-1"></i> <span>Voltado sempre para o mesmo trecho?</span></li>
+                                <li class="flex items-start gap-3 text-brand-gray"><i data-lucide="x" class="text-red-400 mt-1"></i> <span>Travado na hora de responder questões?</span></li>
+                            </ul>
+                            <p class="text-brand-dark font-medium border-t border-brand-border pt-6">Se sim — o problema não é falta de esforço. É o método.</p>
+                        </div>
+                        <div class="bg-brand-dark p-10 md:p-12 text-white">
+                            <h3 class="font-bold text-xs text-brand-border/60 mb-6 uppercase tracking-wider">A SOLUÇÃO QUE FUNCIONA DE VERDADE</h3>
+                            <h2 class="font-display font-bold text-2xl text-white mb-2">Memorização não vem de leitura…</h2>
+                            <h2 class="font-display font-bold text-2xl text-brand-gray mb-8">vem de testar sua memória.</h2>
+                            <div class="space-y-6 text-brand-border/80 leading-relaxed">
+                                <p>Com Memória Ativa, você não relê.</p>
+                                <p>Você pratica lembrar desde o primeiro contato com o conteúdo — e é assim que seu cérebro aprende de fato.</p>
+                                <div class="bg-white/5 p-4 rounded-lg border border-white/10 mt-4">
+                                    <p class="text-white text-sm">O sistema pega o texto que você envia e o transforma em exercícios que treinam sua memória de forma ativa.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- HOW IT WORKS -->
+            <section id="como-funciona" class="py-24 bg-white scroll-mt-24">
+                <div class="container mx-auto px-4 md:px-6">
+                    <div class="mb-16 max-w-2xl mx-auto text-center">
+                        <h2 class="font-display font-bold text-3xl text-brand-dark mb-4">COMO FUNCIONA</h2>
+                        <p class="text-brand-gray">Cinco passos simples para transformar sua rotina de estudos.</p>
+                    </div>
+                    <div class="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
+                        <div class="flex flex-col items-center text-center p-6 rounded-xl border border-brand-border hover:border-brand-primary/50 transition-colors bg-white group h-full">
+                            <div class="w-14 h-14 rounded-full bg-brand-surface flex items-center justify-center mb-6 text-brand-dark group-hover:bg-brand-dark group-hover:text-white transition-colors shrink-0"><i data-lucide="upload"></i></div>
+                            <h3 class="font-bold text-base text-brand-dark mb-3">1. Envie o conteúdo</h3>
+                            <p class="text-brand-gray text-sm">Cole ou anexe a lei, resumo ou apostila que precisa estudar.</p>
+                        </div>
+                        <div class="flex flex-col items-center text-center p-6 rounded-xl border border-brand-border hover:border-brand-primary/50 transition-colors bg-white group h-full">
+                            <div class="w-14 h-14 rounded-full bg-brand-surface flex items-center justify-center mb-6 text-brand-dark group-hover:bg-brand-dark group-hover:text-white transition-colors shrink-0"><i data-lucide="wand-2"></i></div>
+                            <h3 class="font-bold text-base text-brand-dark mb-3">2. O sistema transforma</h3>
+                            <p class="text-brand-gray text-sm">Nossa tecnologia cria exercícios de memória ativa automaticamente.</p>
+                        </div>
+                        <div class="flex flex-col items-center text-center p-6 rounded-xl border border-brand-border hover:border-brand-primary/50 transition-colors bg-white group h-full">
+                            <div class="w-14 h-14 rounded-full bg-brand-surface flex items-center justify-center mb-6 text-brand-dark group-hover:bg-brand-dark group-hover:text-white transition-colors shrink-0"><i data-lucide="brain-circuit"></i></div>
+                            <h3 class="font-bold text-base text-brand-dark mb-3">3. Você estuda</h3>
+                            <p class="text-brand-gray text-sm">Force seu cérebro a buscar a informação em vez de apenas ler passivamente.</p>
+                        </div>
+                        <div class="flex flex-col items-center text-center p-6 rounded-xl border border-brand-border hover:border-brand-primary/50 transition-colors bg-white group h-full">
+                            <div class="w-14 h-14 rounded-full bg-brand-surface flex items-center justify-center mb-6 text-brand-dark group-hover:bg-brand-dark group-hover:text-white transition-colors shrink-0"><i data-lucide="calendar-clock"></i></div>
+                            <h3 class="font-bold text-base text-brand-dark mb-3">4. Revisão na hora certa</h3>
+                            <p class="text-brand-gray text-sm">O algoritmo agenda suas revisões baseado no seu desempenho.</p>
+                        </div>
+                        <div class="flex flex-col items-center text-center p-6 rounded-xl border border-brand-border hover:border-brand-primary/50 transition-colors bg-white group h-full">
+                            <div class="w-14 h-14 rounded-full bg-brand-surface flex items-center justify-center mb-6 text-brand-dark group-hover:bg-brand-dark group-hover:text-white transition-colors shrink-0"><i data-lucide="trending-up"></i></div>
+                            <h3 class="font-bold text-base text-brand-dark mb-3">5. Acompanhe o progresso</h3>
+                            <p class="text-brand-gray text-sm">Visualize sua evolução diária e sinta a segurança aumentar.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BENEFITS -->
+            <section id="beneficios" class="py-24 bg-brand-surface scroll-mt-24">
+                <div class="container mx-auto px-4 md:px-6">
+                    <div class="text-center mb-16 max-w-3xl mx-auto">
+                        <h2 class="font-display font-bold text-3xl md:text-4xl text-brand-dark mb-4">BENEFÍCIOS REAIS</h2>
+                        <p class="text-brand-gray text-lg">Memorizar é lembrar, não reler. Veja o que muda na sua rotina:</p>
+                    </div>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div class="bg-white p-8 rounded-xl border border-brand-border shadow-sm hover:shadow-md transition-shadow">
+                            <div class="mb-6 inline-flex p-3 rounded-lg bg-brand-surface text-brand-primary"><i data-lucide="brain"></i></div>
+                            <h3 class="font-display font-bold text-xl text-brand-dark mb-3">Fim da Leitura Passiva</h3>
+                            <p class="text-brand-gray leading-relaxed">Pare de ler a mesma página 10 vezes sem absorver nada do conteúdo.</p>
+                        </div>
+                        <div class="bg-white p-8 rounded-xl border border-brand-border shadow-sm hover:shadow-md transition-shadow">
+                            <div class="mb-6 inline-flex p-3 rounded-lg bg-brand-surface text-brand-primary"><i data-lucide="target"></i></div>
+                            <h3 class="font-display font-bold text-xl text-brand-dark mb-3">Estudo Ativo Real</h3>
+                            <p class="text-brand-gray leading-relaxed">Aprenda testando seu conhecimento na prática, não apenas consumindo teoria.</p>
+                        </div>
+                        <div class="bg-white p-8 rounded-xl border border-brand-border shadow-sm hover:shadow-md transition-shadow">
+                            <div class="mb-6 inline-flex p-3 rounded-lg bg-brand-surface text-brand-primary"><i data-lucide="clock"></i></div>
+                            <h3 class="font-display font-bold text-xl text-brand-dark mb-3">Revisão Automática</h3>
+                            <p class="text-brand-gray leading-relaxed">Nunca mais perca tempo montando planilhas complexas de revisão.</p>
+                        </div>
+                        <div class="bg-white p-8 rounded-xl border border-brand-border shadow-sm hover:shadow-md transition-shadow">
+                            <div class="mb-6 inline-flex p-3 rounded-lg bg-brand-surface text-brand-primary"><i data-lucide="zap"></i></div>
+                            <h3 class="font-display font-bold text-xl text-brand-dark mb-3">Foco na Lacuna</h3>
+                            <p class="text-brand-gray leading-relaxed">Identifique exatamente o que você não sabe e corrija suas falhas rapidamente.</p>
+                        </div>
+                        <div class="bg-white p-8 rounded-xl border border-brand-border shadow-sm hover:shadow-md transition-shadow">
+                            <div class="mb-6 inline-flex p-3 rounded-lg bg-brand-surface text-brand-primary"><i data-lucide="list-todo"></i></div>
+                            <h3 class="font-display font-bold text-xl text-brand-dark mb-3">Ganho de Tempo</h3>
+                            <p class="text-brand-gray leading-relaxed">Estude em menos tempo com muito mais eficiência e retenção de longo prazo.</p>
+                        </div>
+                        <div class="bg-white p-8 rounded-xl border border-brand-border shadow-sm hover:shadow-md transition-shadow">
+                            <div class="mb-6 inline-flex p-3 rounded-lg bg-brand-surface text-brand-primary"><i data-lucide="shield-check"></i></div>
+                            <h3 class="font-display font-bold text-xl text-brand-dark mb-3">Confiança na Prova</h3>
+                            <p class="text-brand-gray leading-relaxed">Chegue no dia do exame sabendo que o conteúdo está realmente fixado na memória.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TESTIMONIALS -->
+            <section id="depoimentos" class="py-24 bg-white border-b border-brand-border scroll-mt-24">
+                <div class="container mx-auto px-4 md:px-6">
+                    <div class="text-center mb-16">
+                        <h2 class="font-display font-bold text-3xl text-brand-dark">QUEM JÁ USA, RECOMENDA</h2>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-8 mb-16">
+                        <div class="bg-brand-surface p-8 rounded-lg border border-brand-border hover:border-brand-primary/30 transition-colors">
+                            <p class="text-brand-dark mb-6 leading-relaxed text-lg italic">"Passei a memorizar sem precisar reler tudo. Minha confiança nas provas aumentou demais."</p>
+                            <div><h5 class="font-bold text-brand-dark">Camila</h5><span class="text-sm text-brand-gray">Estuda para TRF</span></div>
+                        </div>
+                        <div class="bg-brand-surface p-8 rounded-lg border border-brand-border hover:border-brand-primary/30 transition-colors">
+                            <p class="text-brand-dark mb-6 leading-relaxed text-lg italic">"Eu errava muito em Direito Administrativo. Agora acerto quase tudo."</p>
+                            <div><h5 class="font-bold text-brand-dark">João</h5><span class="text-sm text-brand-gray">Foco em concursos fiscais</span></div>
+                        </div>
+                        <div class="bg-brand-surface p-8 rounded-lg border border-brand-border hover:border-brand-primary/30 transition-colors">
+                            <p class="text-brand-dark mb-6 leading-relaxed text-lg italic">"A diferença é absurda. Dá até prazer em revisar."</p>
+                            <div><h5 class="font-bold text-brand-dark">Luiza</h5><span class="text-sm text-brand-gray">OAB</span></div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12 text-sm font-bold text-brand-gray uppercase tracking-wide">
+                         <div class="flex items-center gap-2"><i data-lucide="check" class="w-5 h-5 text-brand-primary"></i> <span>Mais de 5.000 exercícios gerados</span></div>
+                         <div class="flex items-center gap-2"><i data-lucide="check" class="w-5 h-5 text-brand-primary"></i> <span>Alunos de todo o Brasil</span></div>
+                         <div class="flex items-center gap-2"><i data-lucide="check" class="w-5 h-5 text-brand-primary"></i> <span>Método validado por neurociência</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FAQ -->
+            <section id="faq" class="py-24 bg-white scroll-mt-24">
+                <div class="container mx-auto px-4 md:px-6 max-w-3xl">
+                    <div class="mb-12 text-center">
+                        <h2 class="font-display font-bold text-3xl text-brand-dark mb-4">PERGUNTAS FREQUENTES</h2>
+                        <p class="text-brand-gray">Tire suas dúvidas e comece a estudar do jeito certo.</p>
+                    </div>
+                    <div class="divide-y divide-brand-border border-t border-b border-brand-border mb-12">
+                        <div class="faq-item group cursor-pointer py-6" onclick="toggleFaq(this)">
+                            <div class="flex items-center justify-between text-left">
+                                <span class="font-medium text-lg pr-4 text-brand-dark group-hover:text-brand-gray transition-colors">Para quem é o Memória Ativa?</span>
+                                <i data-lucide="plus" class="text-brand-gray w-5 h-5 group-hover:text-brand-dark icon-toggle"></i>
+                            </div>
+                            <div class="faq-answer overflow-hidden max-h-0 opacity-0 transition-all duration-300 ease-in-out">
+                                <p class="text-brand-gray leading-relaxed pr-8 text-base pt-4">O Memória Ativa foi criado para quem estuda para concursos, OAB ou provas que exigem memorização de textos legais e sente dificuldade em reter o conteúdo.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item group cursor-pointer py-6" onclick="toggleFaq(this)">
+                            <div class="flex items-center justify-between text-left">
+                                <span class="font-medium text-lg pr-4 text-brand-dark group-hover:text-brand-gray transition-colors">Como posso testar gratuitamente?</span>
+                                <i data-lucide="plus" class="text-brand-gray w-5 h-5 group-hover:text-brand-dark icon-toggle"></i>
+                            </div>
+                            <div class="faq-answer overflow-hidden max-h-0 opacity-0 transition-all duration-300 ease-in-out">
+                                <p class="text-brand-gray leading-relaxed pr-8 text-base pt-4">Basta clicar em 'Começar Agora' e preencher seus dados. Você terá acesso imediato para testar a metodologia.</p>
+                            </div>
+                        </div>
+                         <div class="faq-item group cursor-pointer py-6" onclick="toggleFaq(this)">
+                            <div class="flex items-center justify-between text-left">
+                                <span class="font-medium text-lg pr-4 text-brand-dark group-hover:text-brand-gray transition-colors">Substitui meu cursinho ou videoaulas?</span>
+                                <i data-lucide="plus" class="text-brand-gray w-5 h-5 group-hover:text-brand-dark icon-toggle"></i>
+                            </div>
+                            <div class="faq-answer overflow-hidden max-h-0 opacity-0 transition-all duration-300 ease-in-out">
+                                <p class="text-brand-gray leading-relaxed pr-8 text-base pt-4">Não. O Memória Ativa é uma ferramenta de retenção. Você usa seu material de estudo nele para garantir que não vai esquecer.</p>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-brand-surface rounded-2xl p-8 text-center border border-brand-border shadow-soft">
+                        <div class="w-12 h-12 bg-[#25D366]/10 rounded-full flex items-center justify-center mx-auto mb-4 text-[#25D366]">
+                            <i data-lucide="message-circle" class="w-7 h-7 opacity-80"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-xl text-brand-dark mb-2">Ainda tem alguma dúvida?</h3>
+                        <p class="text-brand-gray mb-6">Não encontrou o que procurava? Fale com nossa equipe.</p>
+                        <a href="https://wa.me/5588992113541" target="_blank" class="inline-flex items-center gap-2 bg-[#25D366] text-white px-8 py-4 rounded-xl font-bold hover:bg-[#128C7E] transition-all hover:scale-105 shadow-sm">
+                            Falar com Suporte <i data-lucide="arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA -->
+            <section class="py-24 px-4 bg-brand-surface">
+                <div class="container mx-auto max-w-5xl">
+                    <div class="bg-brand-dark rounded-[40px] p-12 md:p-24 text-center shadow-2xl relative overflow-hidden border border-white/5">
+                        <div class="max-w-3xl mx-auto relative z-10">
+                            <div class="inline-flex items-center gap-2 mb-8 opacity-60">
+                                <i data-lucide="sparkles" class="w-4 h-4 text-brand-cyan"></i>
+                                <span class="text-[10px] font-bold uppercase tracking-[0.4em] text-white">Consolidando sua Aprovação</span>
+                            </div>
+                            <h2 class="font-display font-extrabold text-3xl md:text-5xl text-white mb-8 leading-tight">Sua memória merece <br> <span class="text-brand-cyan">Alta Performance.</span></h2>
+                            <p class="text-white/60 text-lg mb-12 max-w-xl mx-auto leading-relaxed">Junte-se a milhares de concurseiros que pararam de perder tempo lendo e começaram a treinar a lembrança ativa.</p>
+                            <button onclick="openModal()" class="px-12 py-6 text-xl bg-white text-brand-dark hover:bg-brand-cyan hover:text-white transition-all rounded-2xl shadow-xl font-black inline-block">TESTAR MÉTODO AGORA</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FOOTER -->
+            <footer class="bg-white border-t border-brand-border pt-16 pb-8">
+                <div class="container mx-auto px-4 md:px-6">
+                    <div class="grid md:grid-cols-4 gap-12 mb-12">
+                        <div class="col-span-1 md:col-span-2">
+                            <div class="mb-6 font-display font-extrabold text-xl tracking-tight text-brand-dark">Memória Ativa</div>
+                            <p class="text-brand-gray text-sm mb-6 max-w-xs">Transforme leis em treino real de memória utilizando Active Recall e Inteligência Artificial.</p>
+                            <div class="flex gap-4 mb-6">
+                                <a href="#" class="flex items-center gap-2 text-sm text-brand-gray hover:text-brand-primary transition-colors"><i data-lucide="instagram" class="w-4 h-4"></i> Instagram</a>
+                                <a href="#" class="flex items-center gap-2 text-sm text-brand-gray hover:text-red-600 transition-colors"><i data-lucide="youtube" class="w-4 h-4"></i> YouTube</a>
+                            </div>
+                             <div class="text-sm text-brand-gray space-y-2">
+                               <div class="flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4"></i> <span>contato@memoriaativa.com.br</span></div>
+                            </div>
+                        </div>
+                         <div class="md:col-span-2 flex flex-col items-start md:items-end">
+                            <h4 class="font-bold text-brand-dark mb-6 text-sm uppercase tracking-wide">Legal</h4>
+                            <div class="flex flex-col md:items-end space-y-4 text-sm text-brand-gray">
+                               <a href="#" class="hover:text-brand-primary">Termos de Uso</a>
+                               <a href="#" class="hover:text-brand-primary">Política de Privacidade</a>
+                               <div class="flex items-center gap-2 text-brand-dark/70 pt-4"><i data-lucide="lock" class="w-3 h-3"></i> <span>Seus dados estão seguros.</span></div>
+                            </div>
+                          </div>
+                    </div>
+                    <div class="border-t border-brand-border pt-8 text-center text-xs text-brand-gray"><p>Memória Ativa © 2024. Feito por e para concurseiros.</p></div>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- MODAL -->
+    <div id="lead-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-brand-dark/80 backdrop-blur-md" onclick="closeModal()"></div>
+        <div class="bg-white rounded-3xl shadow-card w-full max-w-md relative z-10 p-8 text-center">
+            <button onclick="closeModal()" class="absolute top-6 right-6 text-brand-gray"><i data-lucide="x"></i></button>
+            <h3 class="font-display font-bold text-2xl mb-2">Quase lá!</h3>
+            <p class="text-brand-gray text-sm mb-8">Insira seu WhatsApp para liberar seu acesso gratuito no aplicativo oficial.</p>
+            <form id="lead-form" class="space-y-4 text-left">
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-brand-gray ml-1">Nome Completo</label>
+                    <input type="text" id="name" required class="w-full px-4 py-4 rounded-xl border border-brand-border bg-brand-surface outline-none focus:ring-2 focus:ring-brand-cyan/20" placeholder="Seu Nome">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-brand-gray ml-1">WhatsApp</label>
+                    <input type="tel" id="whatsapp" required class="w-full px-4 py-4 rounded-xl border border-brand-border bg-brand-surface outline-none focus:ring-2 focus:ring-brand-cyan/20" placeholder="(00) 00000-0000">
+                </div>
+                <button type="submit" id="submit-btn" class="w-full bg-brand-dark text-white py-5 rounded-xl font-bold text-lg hover:bg-slate-900 transition-all flex items-center justify-center gap-2">
+                    ACESSAR APLICATIVO <i data-lucide="arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // URL OFICIAL ÚNICA E ABSOLUTA
+        const APP_OFFICIAL_URL = 'https://memoria-ativa-pro.vercel.app/';
+
+        function toggleMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function openModal() {
+            document.getElementById('lead-modal').classList.remove('hidden');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeModal() {
+            document.getElementById('lead-modal').classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        }
+
+        // Logic for static FAQ Accordion
+        function toggleFaq(element) {
+            const answer = element.querySelector('.faq-answer');
+            const icon = element.querySelector('.icon-toggle');
+            
+            // Close all others
+            document.querySelectorAll('.faq-answer').forEach(el => {
+                if (el !== answer && el.classList.contains('active')) {
+                   el.classList.remove('active');
+                   el.style.maxHeight = '0';
+                   el.style.opacity = '0';
+                   const otherIcon = el.parentElement.querySelector('.icon-toggle');
+                   if(otherIcon) otherIcon.style.transform = 'rotate(0deg)';
+                }
+            });
+
+            if (answer.style.maxHeight === '500px') {
+                 answer.style.maxHeight = '0';
+                 answer.style.opacity = '0';
+                 answer.classList.remove('active');
+                 icon.style.transform = 'rotate(0deg)';
+            } else {
+                 answer.style.maxHeight = '500px'; 
+                 answer.style.opacity = '1';
+                 answer.classList.add('active');
+                 icon.style.transform = 'rotate(45deg)'; 
+            }
+        }
+
+        document.getElementById('lead-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.innerHTML = "Redirecionando...";
+
+            const data = {
+                name: document.getElementById('name').value,
+                whatsapp: document.getElementById('whatsapp').value,
+                source: 'Site Hostinger - Popup',
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                // Envio para o Make (Webhook)
+                await fetch('https://hook.us2.make.com/m47wi6zqyh8s74my0pld2j0ay9zo2g3w', {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(data)
+                });
+
+                // REDIRECIONAMENTO DEFINITIVO PARA VERCEL PRO
+                window.location.href = APP_OFFICIAL_URL;
+            } catch (error) {
+                console.error("Erro no redirecionamento:", error);
+                window.location.href = APP_OFFICIAL_URL;
+            }
+        });
+
+        // Initialize Lucide Icons for static content
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    </script>
+    <script type="module" src="./index.tsx"></script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>

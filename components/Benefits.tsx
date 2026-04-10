@@ -36,27 +36,27 @@ const benefits = [
 
 export const Benefits: React.FC = () => {
   return (
-    <section id="beneficios" className="py-24 bg-brand-surface scroll-mt-24">
+    <section id="beneficios" className="py-24 bg-slate-50 scroll-mt-24">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-16 max-w-3xl mx-auto">
-          <h2 className="font-display font-bold text-3xl md:text-4xl text-brand-dark mb-4">
+          <h2 className="font-display font-bold text-3xl md:text-4xl text-slate-900 mb-4">
             BENEFÍCIOS REAIS
           </h2>
-          <p className="text-brand-gray text-lg">
+          <p className="text-slate-600 text-lg">
             Memorizar é lembrar, não reler. Veja o que muda na sua rotina:
           </p>
         </div>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {benefits.map((benefit, idx) => (
-            <div key={idx} className="bg-white p-8 rounded-xl border border-brand-border shadow-sm hover:shadow-md transition-shadow">
-              <div className="mb-6 inline-flex p-3 rounded-lg bg-brand-surface text-brand-primary">
+            <div key={idx} className="bg-white p-8 rounded-3xl border border-slate-200 shadow-md hover:shadow-lg transition-shadow">
+              <div className="mb-6 inline-flex p-3 rounded-2xl bg-slate-50 text-orange-500">
                 <benefit.icon size={24} />
               </div>
-              <h3 className="font-display font-bold text-xl text-brand-dark mb-3">
+              <h3 className="font-display font-bold text-xl text-slate-900 mb-3">
                 {benefit.title}
               </h3>
-              <p className="text-brand-gray leading-relaxed">
+              <p className="text-slate-600 leading-relaxed">
                 {benefit.desc}
               </p>
             </div>

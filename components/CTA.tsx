@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { Button } from './Button';
-import { X, User, Phone, ArrowRight, Loader2 } from 'lucide-react';
+import { X, User, Phone, ArrowRight, Loader2, Sparkles } from 'lucide-react';
+import { Logo } from './Logo';
 
 export const CTA: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [leadData, setLeadData] = useState({ name: '', whatsapp: '' });
   
-  const EXTERNAL_LINK = 'https://script.google.com/macros/s/AKfycbxx8N9l7p0QcfUPHWx_AzHfZElnyht-gCWqOoO075TQMfL2ptW-tuTgASQoZHfGWR1dnw/exec';
+  const FINAL_APP_URL = 'https://memoria-ativa-pro.vercel.app/';
   const WEBHOOK_URL = 'https://hook.us2.make.com/m47wi6zqyh8s74my0pld2j0ay9zo2g3w';
-
+  
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => {
     if (!isSubmitting) setIsModalOpen(false);
@@ -17,147 +18,94 @@ export const CTA: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (leadData.name && leadData.whatsapp) {
-      setIsSubmitting(true);
-      
-      try {
-        // Enviando os dados para o webhook do Make.com
-        await fetch(WEBHOOK_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            ...leadData,
-            source: 'CTA Final - Landing Page',
-            timestamp: new Date().toISOString()
-          }),
-        });
-      } catch (error) {
-        console.error('Erro ao enviar dados para o webhook:', error);
-      } finally {
-        // Redireciona o usuário independentemente do sucesso do webhook para não perder a venda
-        window.location.href = EXTERNAL_LINK;
+    if (!leadData.name || !leadData.whatsapp) return;
+
+    setIsSubmitting(true);
+    const payload = JSON.stringify({
+      ...leadData,
+      source: 'CTA Final',
+      timestamp: new Date().toISOString()
+    });
+
+    try {
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(WEBHOOK_URL, payload);
+      } else {
+        await fetch(WEBHOOK_URL, { method: 'POST', body: payload, mode: 'no-cors' });
       }
+    } catch (err) {
+        console.warn("Erro no webhook", err);
     }
+
+    setTimeout(() => {
+      window.open(FINAL_APP_URL, '_blank');
+      setIsSubmitting(false);
+      setIsModalOpen(false);
+    }, 1000);
   };
 
   return (
-    <section className="py-24 px-4 bg-white">
-      <div className="container mx-auto">
-        <div className="bg-brand-dark rounded-xl p-10 md:p-20 text-center shadow-soft relative overflow-hidden">
-          {/* Decorative Background Element */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-brand-primary/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
-          
+    <section className="py-24 px-4 bg-slate-50">
+      <div className="container mx-auto max-w-5xl">
+        <div className="bg-slate-900 rounded-[40px] p-12 md:p-24 text-center shadow-2xl relative overflow-hidden border border-white/5">
           <div className="max-w-3xl mx-auto relative z-10">
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-white mb-6 uppercase tracking-tight">
-                COMECE AGORA    
-            </h2>
-            <p className="text-gray-400 text-lg mb-10">
-              Use o conteúdo que você já estuda para treinar sua memória e ver resultado de verdade.
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Button 
-                variant="primary" 
-                size="lg" 
-                onClick={handleOpenModal}
-                className="px-10 text-lg hover:scale-105 transition-transform"
-              >
-                Começar meus Estudos
-              </Button>
+            <div className="inline-flex items-center gap-2 mb-8 opacity-60">
+              <Sparkles className="w-4 h-4 text-orange-500" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-white">Consolidando sua Aprovação</span>
             </div>
+            <h2 className="font-display font-extrabold text-3xl md:text-5xl text-white mb-8 leading-tight">
+                Sua memória merece <br />
+                <span className="text-orange-500">Alta Performance.</span>
+            </h2>
+            <p className="text-white/60 text-lg mb-12 max-w-xl mx-auto leading-relaxed">
+              Junte-se a milhares de concurseiros que pararam de perder tempo lendo e começaram a treinar a lembrança ativa.
+            </p>
+            <Button 
+              variant="primary" 
+              size="lg" 
+              onClick={handleOpenModal}
+              className="px-12 py-6 text-xl bg-orange-500 text-white hover:bg-orange-600 transition-all rounded-2xl shadow-xl font-black"
+            >
+              TESTAR MÉTODO AGORA
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Lead Capture Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          {/* Backdrop */}
-          <div 
-            className="absolute inset-0 bg-brand-dark/60 backdrop-blur-sm animate-in fade-in duration-300"
-            onClick={handleCloseModal}
-          ></div>
-          
-          {/* Modal Content */}
-          <div className="bg-white rounded-2xl shadow-card w-full max-w-md relative z-10 animate-in zoom-in-95 duration-300 overflow-hidden">
-            <div className="p-6 md:p-8">
-              {!isSubmitting && (
-                <button 
-                  onClick={handleCloseModal}
-                  className="absolute top-4 right-4 p-2 text-brand-gray hover:text-brand-dark transition-colors rounded-lg"
-                >
-                  <X size={20} />
-                </button>
-              )}
-
-              <div className="mb-6 text-center">
-                <div className="w-16 h-16 bg-brand-surface rounded-full flex items-center justify-center mx-auto mb-4 text-brand-primary">
-                  <ArrowRight size={32} />
-                </div>
-                <h3 className="font-display font-bold text-2xl text-brand-dark mb-2">Quase lá!</h3>
-                <p className="text-brand-gray text-sm">Preencha seus dados para acessar o método.</p>
-              </div>
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-brand-dark uppercase tracking-wider ml-1">Nome Completo</label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-gray" size={18} />
-                    <input 
-                      type="text"
-                      required
-                      disabled={isSubmitting}
-                      placeholder="Seu nome"
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-brand-border focus:ring-2 focus:ring-brand-primary outline-none transition-all bg-brand-surface/50 disabled:opacity-50"
-                      value={leadData.name}
-                      onChange={(e) => setLeadData({...leadData, name: e.target.value})}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-brand-dark uppercase tracking-wider ml-1">WhatsApp</label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-gray" size={18} />
-                    <input 
-                      type="tel"
-                      required
-                      disabled={isSubmitting}
-                      placeholder="(00) 00000-0000"
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-brand-border focus:ring-2 focus:ring-brand-primary outline-none transition-all bg-brand-surface/50 disabled:opacity-50"
-                      value={leadData.whatsapp}
-                      onChange={(e) => setLeadData({...leadData, whatsapp: e.target.value})}
-                    />
-                  </div>
-                </div>
-
-                <Button 
-                  type="submit" 
-                  variant="primary" 
-                  fullWidth 
-                  size="lg"
-                  disabled={isSubmitting}
-                  className="mt-6 gap-2 group"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="animate-spin" size={18} />
-                      Processando...
-                    </>
-                  ) : (
-                    <>
-                      Continuar
-                      <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                    </>
-                  )}
-                </Button>
-                
-                <p className="text-[10px] text-brand-gray text-center mt-4">
-                  Seus dados estão protegidos. Ao clicar em continuar você será redirecionado para o checkout.
-                </p>
-              </form>
+          <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-md" onClick={handleCloseModal}></div>
+          <div className="bg-white rounded-3xl shadow-lg w-full max-w-md relative z-10 overflow-hidden p-8 animate-in zoom-in-95 duration-200">
+            <button onClick={handleCloseModal} className="absolute top-6 right-6 p-2 text-slate-500 hover:text-slate-900 transition-colors"><X size={20} /></button>
+            <div className="mb-8 text-center flex flex-col items-center">
+              <img src="/logo.png" alt="Memória Ativa" className="h-12 mb-6 object-contain" />
+              <h3 className="font-display font-bold text-2xl text-slate-900 mb-2">Pronto para o Próximo Nível?</h3>
+              <p className="text-slate-600 text-sm">Preencha seus dados para finalizar seu acesso.</p>
             </div>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-2">
+                <label className="text-[10px] font-extrabold text-slate-900 uppercase tracking-widest ml-1 opacity-70">Nome Completo</label>
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                  <input type="text" required disabled={isSubmitting} placeholder="Seu nome" className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 bg-slate-50 outline-none focus:ring-2 focus:ring-orange-500/20" value={leadData.name} onChange={(e) => setLeadData({...leadData, name: e.target.value})} />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-extrabold text-slate-900 uppercase tracking-widest ml-1 opacity-70">WhatsApp</label>
+                <div className="relative">
+                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                  <input type="tel" required disabled={isSubmitting} placeholder="(00) 00000-0000" className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 bg-slate-50 outline-none focus:ring-2 focus:ring-orange-500/20" value={leadData.whatsapp} onChange={(e) => setLeadData({...leadData, whatsapp: e.target.value})} />
+                </div>
+              </div>
+              
+              <button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="w-full mt-8 gap-3 bg-orange-500 h-16 rounded-2xl text-white font-bold flex items-center justify-center hover:bg-orange-600 transition-colors"
+              >
+                {isSubmitting ? <><Loader2 className="animate-spin mr-2" size={20} /> Entrando...</> : <>Garantir minha Vaga <ArrowRight className="ml-2" size={20} /></>}
+              </button>
+            </form>
           </div>
         </div>
       )}

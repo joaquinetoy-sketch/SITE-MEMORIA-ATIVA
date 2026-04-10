@@ -16,11 +16,11 @@ export const LearningTechniques: React.FC = () => {
   const allItems = [...techniques, ...techniques, ...techniques, ...techniques];
 
   return (
-    <section className="py-12 bg-brand-surface/50 border-b border-brand-border overflow-hidden relative">
+    <section className="py-12 bg-slate-50/50 border-b border-slate-200 overflow-hidden relative">
       
       {/* Title */}
       <div className="container mx-auto px-4 mb-8 text-center">
-        <p className="text-sm font-bold text-brand-gray uppercase tracking-widest">
+        <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">
           Técnicas de Aprendizagem Inclusas
         </p>
       </div>
@@ -35,12 +35,12 @@ export const LearningTechniques: React.FC = () => {
           {allItems.map((tech, index) => (
             <div 
               key={index} 
-              className="flex items-center gap-3 mx-4 px-6 py-4 bg-white rounded-xl border border-brand-border shadow-sm min-w-[max-content] hover:border-brand-primary/30 hover:shadow-md transition-all duration-300"
+              className="flex items-center gap-3 mx-4 px-6 py-4 bg-white rounded-2xl border border-slate-200 shadow-sm min-w-[max-content] hover:border-orange-500/30 hover:shadow-md transition-all duration-300"
             >
-              <div className="bg-brand-surface p-2 rounded-lg text-brand-primary">
+              <div className="bg-slate-50 p-2 rounded-xl text-orange-500">
                 <tech.icon size={20} strokeWidth={2.5} />
               </div>
-              <span className="font-display font-semibold text-brand-dark text-lg">
+              <span className="font-display font-semibold text-slate-900 text-lg">
                 {tech.name}
               </span>
             </div>

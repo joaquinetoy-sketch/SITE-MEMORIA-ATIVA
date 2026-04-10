@@ -19,9 +19,9 @@ export const WhatsAppButton: React.FC = () => {
       />
       
       {/* Tooltip Label */}
-      <span className="absolute right-full mr-4 bg-white text-brand-dark px-4 py-2 rounded-xl text-sm font-bold shadow-card opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap border border-brand-border translate-x-4 group-hover:translate-x-0 hidden md:block">
+      <span className="absolute right-full mr-4 bg-white text-slate-900 px-4 py-2 rounded-xl text-sm font-bold shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap border border-slate-200 translate-x-4 group-hover:translate-x-0 hidden md:block">
         Fale Conosco
-        <div className="absolute top-1/2 -right-1.5 -translate-y-1/2 w-3 h-3 bg-white border-r border-t border-brand-border rotate-45"></div>
+        <div className="absolute top-1/2 -right-1.5 -translate-y-1/2 w-3 h-3 bg-white border-r border-t border-slate-200 rotate-45"></div>
       </span>
       
       {/* Pulse Effect for visibility */}
